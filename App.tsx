@@ -1,6 +1,3 @@
-
-
-
 import React, { useState, useEffect } from 'react';
 import { Sidebar } from './components/Sidebar';
 import { Dashboard } from './components/Dashboard';
@@ -36,13 +33,13 @@ import {
   INITIAL_RETIREMENT_PROFILE
 } from './constants';
 import { Transaction } from './types';
-import { Bot, Mic } from 'lucide-react';
+import { Bot, Mic, Search } from 'lucide-react';
 
 const App: React.FC = () => {
   const [activeTab, setActiveTab] = useState('dashboard');
   const [isAIOpen, setIsAIOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false); 
-  const [autoStartVoice, setAutoStartVoice] = useState(false); // Trigger voice on open
+  const [autoStartVoice, setAutoStartVoice] = useState(false); 
   
   // Global State
   const [transactions, setTransactions] = useState(INITIAL_TRANSACTIONS);
@@ -54,7 +51,7 @@ const App: React.FC = () => {
   // Toggle AI Panel
   const toggleAI = () => {
       setIsAIOpen(!isAIOpen);
-      setAutoStartVoice(false); // Reset auto-start when toggling manually
+      if (isAIOpen) setAutoStartVoice(false); // Reset auto-start when closing or toggling manually
   };
 
   const triggerOmniVoice = () => {
@@ -125,8 +122,47 @@ const App: React.FC = () => {
       {/* Main Content Area */}
       <div className="flex-1 flex flex-col h-full relative overflow-hidden">
         {/* Mobile Header */}
-        <div className="md:hidden h-16 bg-slate-900 flex items-center justify-between px-4 text-white">
+        <div className="md:hidden h-16 bg-slate-900 flex items-center justify-between px-4 text-white flex-shrink-0">
              <span className="font-bold text-lg">Pocket Ledger</span>
              {/* Mobile Search Trigger */}
              <button onClick={() => setIsSearchOpen(true)} className="p-2 text-white/80 hover:text-white">
-                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="8"/><path d
+                 <Search size={20} />
+             </button>
+        </div>
+
+        {/* Content Scroll Area */}
+        <div className="flex-1 overflow-y-auto overflow-x-hidden p-4 md:p-8 custom-scrollbar">
+             {renderContent()}
+        </div>
+      </div>
+
+      {/* AI Assistant Panel */}
+      <AIAssistant 
+        transactions={transactions}
+        budgets={budgets}
+        isOpen={isAIOpen}
+        toggleOpen={toggleAI}
+        onAddTransaction={handleAddTransaction}
+        setActiveTab={setActiveTab}
+        autoStartListening={autoStartVoice}
+      />
+
+      {/* Global Search */}
+      <GlobalSearch 
+        isOpen={isSearchOpen}
+        onClose={() => setIsSearchOpen(false)}
+        transactions={transactions}
+      />
+      
+      {/* Floating Action Button (Mobile/Desktop) for AI */}
+      <button 
+        onClick={triggerOmniVoice}
+        className="fixed bottom-6 right-6 bg-indigo-600 hover:bg-indigo-700 text-white p-4 rounded-full shadow-lg shadow-indigo-300 transition-all z-40 flex items-center justify-center hover:scale-105"
+      >
+        {isAIOpen ? <Mic size={24} className="animate-pulse" /> : <Bot size={24} />}
+      </button>
+    </div>
+  );
+};
+
+export default App;

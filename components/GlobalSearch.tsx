@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect, useRef } from 'react';
-import { Search, X, ArrowUpRight, ArrowDownRight, Calendar, FileText } from 'lucide-react';
+import { Search, X, ArrowUpRight, ArrowDownRight, Calendar, StickyNote } from 'lucide-react';
 import { Transaction } from '../types';
 
 interface GlobalSearchProps {
@@ -29,7 +29,6 @@ export const GlobalSearch: React.FC<GlobalSearchProps> = ({ isOpen, onClose, tra
           if (e.key === 'Escape' && isOpen) {
               onClose();
           }
-          // Cmd+K or Ctrl+K trigger (handled in App usually, but good backup)
       };
       window.addEventListener('keydown', handleKeyDown);
       return () => window.removeEventListener('keydown', handleKeyDown);
@@ -69,59 +68,59 @@ export const GlobalSearch: React.FC<GlobalSearchProps> = ({ isOpen, onClose, tra
             />
             <div className="flex items-center space-x-2">
                 <span className="hidden sm:inline text-xs bg-slate-100 text-slate-500 px-2 py-1 rounded border border-slate-200 font-mono">ESC</span>
-                <button onClick={onClose} className="p-1 hover:bg-slate-100 rounded-full text-slate-400 transition-colors">
+                <button onClick={onClose} className="p-1 hover:bg-slate-100 rounded text-slate-400">
                     <X size={20} />
                 </button>
             </div>
         </div>
 
-        {query && (
-            <div className="bg-slate-50 max-h-[400px] overflow-y-auto">
-                {filtered.length > 0 ? (
-                    <div className="py-2">
-                        <h4 className="px-4 py-2 text-xs font-bold text-slate-500 uppercase tracking-wider">Top Results</h4>
-                        {filtered.map(tx => (
-                            <div key={tx.id} className="px-4 py-3 hover:bg-white hover:shadow-sm border-y border-transparent hover:border-slate-100 transition-all cursor-pointer group flex items-center justify-between">
-                                <div className="flex items-center space-x-3">
-                                    <div className={`w-8 h-8 rounded-full flex items-center justify-center ${tx.type === 'income' ? 'bg-emerald-100 text-emerald-600' : 'bg-slate-200 text-slate-500'}`}>
-                                        {tx.type === 'income' ? <ArrowDownRight size={16} /> : <ArrowUpRight size={16} />}
-                                    </div>
-                                    <div>
-                                        <p className="font-medium text-slate-900">{tx.merchant}</p>
-                                        <div className="flex items-center space-x-2 text-xs text-slate-500">
-                                            <span className="flex items-center"><Calendar size={10} className="mr-1" />{tx.date}</span>
-                                            <span>•</span>
-                                            <span>{tx.category}</span>
-                                            {tx.notes && (
-                                                <>
-                                                    <span>•</span>
-                                                    <span className="flex items-center text-indigo-500"><FileText size={10} className="mr-1" /> Note</span>
-                                                </>
-                                            )}
-                                        </div>
+        <div className="bg-slate-50 min-h-[100px]">
+            {query && filtered.length === 0 && (
+                <div className="p-8 text-center text-slate-400">
+                    <Search size={32} className="mx-auto mb-2 opacity-50" />
+                    <p>No results found.</p>
+                </div>
+            )}
+
+            {query && filtered.length > 0 && (
+                <div className="p-2 space-y-1">
+                    <h4 className="text-xs font-bold text-slate-500 uppercase tracking-wider px-3 py-2">Transactions</h4>
+                    {filtered.map(tx => (
+                        <div key={tx.id} className="flex items-center justify-between p-3 hover:bg-white hover:shadow-sm rounded-xl cursor-pointer transition-all group">
+                            <div className="flex items-center space-x-3">
+                                <div className={`w-10 h-10 rounded-full flex items-center justify-center ${tx.type === 'income' ? 'bg-emerald-100 text-emerald-600' : 'bg-slate-200 text-slate-600'}`}>
+                                    {tx.type === 'income' ? <ArrowDownRight size={18} /> : <ArrowUpRight size={18} />}
+                                </div>
+                                <div>
+                                    <p className="font-bold text-slate-900">{tx.merchant}</p>
+                                    <div className="flex items-center text-xs text-slate-500 space-x-2">
+                                        <span className="flex items-center"><Calendar size={10} className="mr-1"/> {tx.date}</span>
+                                        {tx.source === 'receipt' && <span className="flex items-center"><StickyNote size={10} className="mr-1"/> Receipt</span>}
                                     </div>
                                 </div>
-                                <span className={`font-bold ${tx.type === 'income' ? 'text-emerald-600' : 'text-slate-900'}`}>
-                                    {tx.type === 'income' ? '+' : ''}${tx.amount.toFixed(2)}
-                                </span>
                             </div>
-                        ))}
-                    </div>
-                ) : (
-                    <div className="p-8 text-center text-slate-400">
-                        <Search size={32} className="mx-auto mb-2 opacity-20" />
-                        <p>No matching transactions found.</p>
-                    </div>
-                )}
-            </div>
-        )}
+                            <span className={`font-bold ${tx.type === 'income' ? 'text-emerald-600' : 'text-slate-900'}`}>
+                                {tx.type === 'income' ? '+' : '-'}${Math.abs(tx.amount).toFixed(2)}
+                            </span>
+                        </div>
+                    ))}
+                </div>
+            )}
 
-        {!query && (
-            <div className="p-4 bg-slate-50 text-xs text-slate-500 flex justify-between">
-                <span>Try searching for "Dinner", "Client", or "$150"</span>
-                <span>Pro Tip: You can search Voice Notes too.</span>
-            </div>
-        )}
+            {!query && (
+                <div className="p-8 text-center text-slate-400">
+                    <div className="inline-flex space-x-4 mb-4">
+                        <div className="flex items-center space-x-1 bg-white border border-slate-200 px-2 py-1 rounded text-xs">
+                            <ArrowUpRight size={12} /> <span>Expense</span>
+                        </div>
+                        <div className="flex items-center space-x-1 bg-white border border-slate-200 px-2 py-1 rounded text-xs">
+                            <Calendar size={12} /> <span>Date</span>
+                        </div>
+                    </div>
+                    <p className="text-sm">Type to search across your entire financial history.</p>
+                </div>
+            )}
+        </div>
       </div>
     </div>
   );

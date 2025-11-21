@@ -1,8 +1,6 @@
 
-
-
 import React from 'react';
-import { LayoutDashboard, Receipt, PieChart, TrendingUp, Settings, Wallet, LogOut, Landmark, FileText, LineChart, Trophy, Sparkles, Users, ShoppingBag, Search } from 'lucide-react';
+import { LayoutDashboard, Receipt, PieChart, TrendingUp, Settings, Wallet, LogOut, ScrollText, LineChart, Trophy, Sparkles, Users, ShoppingBag, Search } from 'lucide-react';
 
 interface SidebarProps {
   activeTab: string;
@@ -20,8 +18,8 @@ export const Sidebar: React.FC<SidebarProps> = ({ activeTab, setActiveTab, onOpe
     { id: 'transactions', label: 'Transactions', icon: Receipt },
     { id: 'budget', label: 'Budgets', icon: PieChart },
     { id: 'planning', label: 'Retirement & Strategy', icon: LineChart },
-    { id: 'wealth', label: 'Wealth & Cards', icon: Landmark },
-    { id: 'tax', label: 'Taxes', icon: FileText },
+    { id: 'wealth', label: 'Wealth & Cards', icon: Wallet },
+    { id: 'tax', label: 'Taxes', icon: ScrollText },
     { id: 'forecast', label: 'Forecast', icon: TrendingUp },
   ];
 
