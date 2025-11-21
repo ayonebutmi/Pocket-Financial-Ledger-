@@ -1,0 +1,8 @@
+{
+  "name": "Copy of Copy of Copy of Pocket Financial Ledger AI #2",
+  "description": "A smart personal finance workspace with receipt OCR, envelope budgeting, and an intelligent AI split-screen assistant.",
+  "requestFramePermissions": [
+    "camera",
+    "microphone"
+  ]
+}
